@@ -4,6 +4,7 @@ public interface Constants {
 
     interface Path {
         String WEATHER = "weather";
+        String WEATHER_API = "WEATHER API";
         String HISTORY = "history";
         String FORECAST = "forecast";
         String HISTORY_SUMMARY = "historysummary";
