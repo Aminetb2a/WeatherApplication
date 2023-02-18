@@ -1,8 +1,9 @@
-package patika.dev.definex.weaterApp.model.visualCrossing.forecast;
+package patika.dev.definex.weaterApp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,11 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({"id", "address", "name", "tz", "index", "latitude", "longitude", "distance", "time", "tz", "alerts", "stationContributions", "currentConditions", "values"})
 public class LocationsDTO {
     @JsonProperty("stationContributions")
     private Object stationContributions;
-    @JsonProperty("values")
-    private List<ValuesDTO> values;
     @JsonProperty("id")
     private String id;
     @JsonProperty("address")
@@ -39,4 +39,6 @@ public class LocationsDTO {
     private CurrentConditionsDTO currentConditions;
     @JsonProperty("alerts")
     private Object alerts;
+    @JsonProperty("values")
+    private List<ValuesDTO> values;
 }

@@ -2,6 +2,7 @@ package patika.dev.definex.weaterApp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -11,7 +12,7 @@ import patika.dev.definex.weaterApp.config.prop.WeatherConfigurationProperties;
 import patika.dev.definex.weaterApp.enums.BreakBy;
 import patika.dev.definex.weaterApp.enums.ChronoUnit;
 import patika.dev.definex.weaterApp.enums.Period;
-import patika.dev.definex.weaterApp.model.visualCrossing.ForecastBaseResponse;
+import patika.dev.definex.weaterApp.model.WeatherBaseResponse;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import static patika.dev.definex.weaterApp.config.constants.Constants.Key.*;
 import static patika.dev.definex.weaterApp.config.constants.Constants.Path.*;
 import static patika.dev.definex.weaterApp.config.constants.Constants.Value.*;
 
+@Slf4j
 @Service
 public class WeatherService extends BaseService {
 
@@ -38,7 +40,7 @@ public class WeatherService extends BaseService {
         params.add(AGGREGATEHOURS, timesteps.toString());
         ResponseEntity<?> response = get(FORECAST, params);
         if (response.getStatusCode().is2xxSuccessful()) {
-            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), ForecastBaseResponse.class));
+            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), WeatherBaseResponse.class));
         }
         return response;
     }
@@ -56,7 +58,7 @@ public class WeatherService extends BaseService {
         Optional.ofNullable(timestepsMinutes).ifPresent(t -> params.add(AGGREGATEMINUTES, t.toString()));
         ResponseEntity<?> response = get(HISTORY, params);
         if (response.getStatusCode().is2xxSuccessful()) {
-            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), ForecastBaseResponse.class));
+            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), WeatherBaseResponse.class));
         }
         return response;
     }

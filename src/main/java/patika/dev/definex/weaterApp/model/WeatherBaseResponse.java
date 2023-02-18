@@ -1,11 +1,11 @@
-package patika.dev.definex.weaterApp.model.visualCrossing;
+package patika.dev.definex.weaterApp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import patika.dev.definex.weaterApp.model.visualCrossing.forecast.LocationsDTO;
+import patika.dev.definex.weaterApp.model.dto.LocationsDTO;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ForecastBaseResponse {
+public class WeatherBaseResponse {
     @JsonProperty("messages")
     private Object messages;
     @JsonProperty("locations")
