@@ -78,7 +78,7 @@ public class WeatherService extends BaseService {
     private MultiValueMap<String, String> getParams() {
         return new LinkedMultiValueMap<>() {{
             add(CONTENTTYPE, JSON);
-            add(LOCATIONMODE, ARRAY);
+            add(LOCATIONMODE, SINGLE);
             add(SHORTCOLUMNNAMES, TRUE);
         }};
     }

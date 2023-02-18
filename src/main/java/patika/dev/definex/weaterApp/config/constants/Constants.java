@@ -29,7 +29,7 @@ public interface Constants {
 
     interface Value {
         String JSON = "json";
-        String ARRAY = "array";
+        String SINGLE = "single";
         String TRUE = "true";
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({"id", "address", "name", "tz", "index", "latitude", "longitude", "distance", "time", "tz", "alerts", "stationContributions", "currentConditions", "values"})
-public class LocationsDTO {
+public class LocationDTO {
     @JsonProperty("stationContributions")
     private Object stationContributions;
     @JsonProperty("id")
