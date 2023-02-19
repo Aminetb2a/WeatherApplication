@@ -22,6 +22,8 @@ import patika.dev.definex.weaterApp.enums.BreakBy;
 import patika.dev.definex.weaterApp.enums.ChronoUnit;
 import patika.dev.definex.weaterApp.enums.Period;
 import patika.dev.definex.weaterApp.model.WeatherBaseResponse;
+import patika.dev.definex.weaterApp.model.WeatherTimeline;
+import patika.dev.definex.weaterApp.model.forecastDTO.LocationDTO;
 import patika.dev.definex.weaterApp.service.WeatherService;
 import patika.dev.definex.weaterApp.validator.model.ValidationError;
 import patika.dev.definex.weaterApp.validator.timesteps.TimeSteps;
@@ -47,15 +49,31 @@ public class WeatherController {
     private final WeatherService mWeatherService;
 
 
+    @Operation(summary = "Get Weather Timeline", description = "The Timeline Weather API is the simplest and most powerful way to retrieve weather data. You can request data over any time window including windows that span the past, present, and future. The API will take care of the combining historical observations, current 15-day forecasts, and statistical weather forecasts to create a single, consolidated dataset via a single API call.", tags = {"Timeline"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = WeatherTimeline.class)))),
+            @ApiResponse(responseCode = "400", description = "Bad Request")})
+    @GetMapping(TIMELINE)
+    public ResponseEntity<?> getWeatherTimeline(@RequestParam @Size(min = 2, message = "Location must be provided") @ApiParam(name = "location", value = "Location", example = "london") String location,
+                                                @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        if (startDate != null & endDate != null)
+            if (endDate.isBefore(startDate))
+                return mWeatherService.dateValidator(startDate, endDate);
+        return mWeatherService.getWeatherTimeline(location, startDate, endDate);
+    }
+
     @Operation(summary = "Get Weather Forecast", description = "Provides access to up to 15-days of weather forecast information", tags = {"Forecast"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = WeatherBaseResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request")})
     @GetMapping(FORECAST)
-    public WeatherBaseResponse getWeatherForecast(@RequestParam @Size(min = 2, message = "Location must be provided") @ApiParam(name = "location", value = "Location", example = "london") String location,
-                                                  @RequestParam(defaultValue = "5") @Positive @ApiParam(name = "forecastDays", value = "Forecast Days", example = "5") Integer forecastDays,
-                                                  @RequestParam(defaultValue = "12") @TimeSteps(Values = {1, 12, 24}, message = "The Integer value is invalid, supported values are 1, 12 or 24.") @ApiParam(name = "timesteps", value = "Forecast time steps", example = "12") Integer timesteps
+    public LocationDTO getWeatherForecast(@RequestParam @Size(min = 2, message = "Location must be provided") @ApiParam(name = "location", value = "Location", example = "london") String location,
+                                          @RequestParam(defaultValue = "5") @Positive @ApiParam(name = "forecastDays", value = "Forecast Days", example = "5") Integer forecastDays,
+                                          @RequestParam(defaultValue = "12") @TimeSteps(Values = {1, 12, 24}, message = "The Integer value is invalid, supported values are 1, 12 or 24.") @ApiParam(name = "timesteps", value = "Forecast time steps", example = "12") Integer timesteps
     ) {
         return mWeatherService.getWeatherForecast(location, forecastDays, timesteps);
     }
@@ -63,10 +81,10 @@ public class WeatherController {
     @Operation(summary = "Get Historical Weather Records", description = "Provides access to hourly and daily historical weather records", tags = {"History"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = WeatherBaseResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request")})
     @GetMapping(HISTORY)
-    public WeatherBaseResponse getHistoricalWeather(
+    public LocationDTO getHistoricalWeather(
             Period period,
             @Positive Integer timestepsMinutes,
             @RequestParam @Size(min = 2, message = "Location must be provided") String location,
@@ -84,21 +102,21 @@ public class WeatherController {
             @ApiResponse(responseCode = "400", description = "Bad Request")})
     @GetMapping(SUMMARY)
     public ResponseEntity<?> getHistoricalWeather(
-            @RequestParam @Min(1970) Integer maxYear,
-            @RequestParam @Min(1970) Integer minYear,
+            @RequestParam @Min(1970) Integer endYear,
+            @RequestParam @Min(1970) Integer startYear,
             @RequestParam(defaultValue = "none") BreakBy breakBy,
             @RequestParam(defaultValue = "weeks") ChronoUnit chronoUnit,
             @RequestParam @Size(min = 2, message = "Location must be provided") String location,
             @TimeSteps(Values = {1, 24}, message = "The Integer value is invalid, supported values are 1 or 24.") Integer timestepsHours
     ) {
-        if (minYear > maxYear || maxYear > year) {
+        if (startYear > endYear || endYear > year) {
             return ResponseEntity.badRequest().body(
                     ValidationError.builder()
-                            .field("maxYear")
-                            .message("maxYear must be between the minYear and the current calendar year inclusive")
+                            .field("endYear")
+                            .message("endYear must be between the startYear and the current calendar year inclusive")
                             .build()
             );
         }
-        return mWeatherService.getWeatherHistorySummary(location, chronoUnit, breakBy, timestepsHours, maxYear, minYear);
+        return mWeatherService.getWeatherHistorySummary(location, chronoUnit, breakBy, timestepsHours, startYear, startYear);
     }
 }

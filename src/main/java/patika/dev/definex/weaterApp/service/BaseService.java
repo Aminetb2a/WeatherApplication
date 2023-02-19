@@ -33,7 +33,11 @@ public abstract class BaseService {
         RequestEntity.BodyBuilder requestBuilder = RequestEntity.method(method, builder.build().toUri());
         requestBuilder.contentType(MediaType.APPLICATION_JSON);
         RequestEntity<Object> requestEntity = requestBuilder.body(null);
-        return getRestTemplate().exchange(requestEntity, returnType);
+        try {
+            return getRestTemplate().exchange(requestEntity, returnType);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     public RestTemplate getRestTemplate() {

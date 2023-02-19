@@ -3,12 +3,15 @@ package patika.dev.definex.weaterApp.config.constants;
 public interface Constants {
 
     interface Path {
-        String WEATHER = "weather";
-        String WEATHER_API = "WEATHER API";
+        String SLASH = "/";
         String HISTORY = "history";
-        String FORECAST = "forecast";
-        String HISTORY_SUMMARY = "historysummary";
         String SUMMARY = "summary";
+        String WEATHER = "weather";
+        String FORECAST = "forecast";
+        String TIMELINE = "timeline";
+        String WEATHER_DATA = "weatherdata";
+        String WEATHER_API = "WEATHER API";
+        String HISTORY_SUMMARY = "historysummary";
     }
 
     interface Key {

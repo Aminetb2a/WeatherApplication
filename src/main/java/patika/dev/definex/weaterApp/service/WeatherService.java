@@ -13,7 +13,11 @@ import patika.dev.definex.weaterApp.enums.BreakBy;
 import patika.dev.definex.weaterApp.enums.ChronoUnit;
 import patika.dev.definex.weaterApp.enums.Period;
 import patika.dev.definex.weaterApp.model.WeatherBaseResponse;
+import patika.dev.definex.weaterApp.model.WeatherTimeline;
+import patika.dev.definex.weaterApp.model.forecastDTO.LocationDTO;
+import patika.dev.definex.weaterApp.validator.model.ValidationError;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -33,17 +37,17 @@ public class WeatherService extends BaseService {
     }
 
     @SneakyThrows
-    public WeatherBaseResponse getWeatherForecast(String location, Integer forecastDays, Integer timesteps) {
+    public LocationDTO getWeatherForecast(String location, Integer forecastDays, Integer timesteps) {
         params = getParams();
         params.add(LOCATIONS, location);
         params.add(FORECASTDAYS, forecastDays.toString());
         params.add(AGGREGATEHOURS, timesteps.toString());
-        WeatherBaseResponse response = (WeatherBaseResponse) get(FORECAST, params).getBody();
-        return objectMapper.readValue(response.toString(), WeatherBaseResponse.class);
+        ResponseEntity<?> response = get(WEATHER_DATA + SLASH + FORECAST, params);
+        return objectMapper.readValue(response.getBody().toString(), WeatherBaseResponse.class).getLocation();
     }
 
     @SneakyThrows
-    public WeatherBaseResponse getHistoricalWeather(String location, Period period, Integer timestepsHours, Integer timestepsMinutes, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public LocationDTO getHistoricalWeather(String location, Period period, Integer timestepsHours, Integer timestepsMinutes, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         params = getParams();
         if (startDateTime == null & period == null)
             period = Period.today;
@@ -53,11 +57,10 @@ public class WeatherService extends BaseService {
         Optional.ofNullable(startDateTime).ifPresent(d -> params.add(STARTDATETIME, d.toString()));
         Optional.ofNullable(timestepsHours).ifPresent(t -> params.add(AGGREGATEHOURS, t.toString()));
         Optional.ofNullable(timestepsMinutes).ifPresent(t -> params.add(AGGREGATEMINUTES, t.toString()));
-        WeatherBaseResponse response = (WeatherBaseResponse) get(HISTORY, params).getBody();
-        return objectMapper.readValue(response.toString(), WeatherBaseResponse.class);
+        ResponseEntity<?> response = get(WEATHER_DATA + SLASH + HISTORY, params);
+        return objectMapper.readValue(response.getBody().toString(), WeatherBaseResponse.class).getLocation();
     }
 
-    @SneakyThrows
     public ResponseEntity<?> getWeatherHistorySummary(String location, ChronoUnit chronoUnit, BreakBy breakBy, Integer timestepsHours, Integer maxYear, Integer minYear) {
         params = getParams();
         params.add(LOCATIONS, location);
@@ -66,7 +69,22 @@ public class WeatherService extends BaseService {
         params.add(MAXYEAR, maxYear.toString());
         params.add(CHRONOUNIT, chronoUnit.name());
         params.add(AGGREGATEHOURS, timestepsHours.toString());
-        return get(HISTORY_SUMMARY, params);
+        return get(WEATHER_DATA + SLASH + HISTORY_SUMMARY, params);
+    }
+
+    @SneakyThrows
+    public ResponseEntity<?> getWeatherTimeline(String location, LocalDate date1, LocalDate date2) {
+        params = new LinkedMultiValueMap<>();
+        StringBuilder path = new StringBuilder();
+        path.append(location);
+        path.append(SLASH);
+        Optional.ofNullable(date1).ifPresent(path::append);
+        path.append(SLASH);
+        Optional.ofNullable(date2).ifPresent(path::append);
+        ResponseEntity<?> response = get(TIMELINE + SLASH + path, params);
+        if (response.getStatusCode().is2xxSuccessful())
+            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), WeatherTimeline.class));
+        return response;
     }
 
     private MultiValueMap<String, String> getParams() {
@@ -75,5 +93,14 @@ public class WeatherService extends BaseService {
             add(LOCATIONMODE, SINGLE);
             add(SHORTCOLUMNNAMES, TRUE);
         }};
+    }
+
+    public ResponseEntity<ValidationError> dateValidator(LocalDate startDate, LocalDate endDate) {
+        return ResponseEntity.badRequest().body(
+                ValidationError.builder()
+                        .field("endDate")
+                        .message(String.format("The startDate %s cannot be before the endDate %s", startDate, endDate))
+                        .build()
+        );
     }
 }
