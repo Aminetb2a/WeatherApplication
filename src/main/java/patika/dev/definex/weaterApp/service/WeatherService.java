@@ -33,20 +33,17 @@ public class WeatherService extends BaseService {
     }
 
     @SneakyThrows
-    public ResponseEntity<?> getWeatherForecast(String location, Integer forecastDays, Integer timesteps) {
+    public WeatherBaseResponse getWeatherForecast(String location, Integer forecastDays, Integer timesteps) {
         params = getParams();
         params.add(LOCATIONS, location);
         params.add(FORECASTDAYS, forecastDays.toString());
         params.add(AGGREGATEHOURS, timesteps.toString());
-        ResponseEntity<?> response = get(FORECAST, params);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), WeatherBaseResponse.class));
-        }
-        return response;
+        WeatherBaseResponse response = (WeatherBaseResponse) get(FORECAST, params).getBody();
+        return objectMapper.readValue(response.toString(), WeatherBaseResponse.class);
     }
 
     @SneakyThrows
-    public ResponseEntity<?> getHistoricalWeather(String location, Period period, Integer timestepsHours, Integer timestepsMinutes, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public WeatherBaseResponse getHistoricalWeather(String location, Period period, Integer timestepsHours, Integer timestepsMinutes, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         params = getParams();
         if (startDateTime == null & period == null)
             period = Period.today;
@@ -56,11 +53,8 @@ public class WeatherService extends BaseService {
         Optional.ofNullable(startDateTime).ifPresent(d -> params.add(STARTDATETIME, d.toString()));
         Optional.ofNullable(timestepsHours).ifPresent(t -> params.add(AGGREGATEHOURS, t.toString()));
         Optional.ofNullable(timestepsMinutes).ifPresent(t -> params.add(AGGREGATEMINUTES, t.toString()));
-        ResponseEntity<?> response = get(HISTORY, params);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return ResponseEntity.ok(objectMapper.readValue(response.getBody().toString(), WeatherBaseResponse.class));
-        }
-        return response;
+        WeatherBaseResponse response = (WeatherBaseResponse) get(HISTORY, params).getBody();
+        return objectMapper.readValue(response.toString(), WeatherBaseResponse.class);
     }
 
     @SneakyThrows

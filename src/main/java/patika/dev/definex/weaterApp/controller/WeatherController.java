@@ -49,24 +49,24 @@ public class WeatherController {
 
     @Operation(summary = "Get Weather Forecast", description = "Provides access to up to 15-days of weather forecast information", tags = {"Forecast"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation",
+            @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = WeatherBaseResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request")})
     @GetMapping(FORECAST)
-    public ResponseEntity<?> getWeatherForecast(@RequestParam @Size(min = 2, message = "Location must be provided") @ApiParam(name = "location", value = "Location", example = "london") String location,
-                                                @RequestParam(defaultValue = "5") @Positive @ApiParam(name = "forecastDays", value = "Forecast Days", example = "5") Integer forecastDays,
-                                                @TimeSteps(Values = {1, 12, 24}, message = "The Integer value is invalid, supported values are 1, 12 or 24.") @ApiParam(name = "timesteps", value = "Forecast time steps", example = "12") Integer timesteps
+    public WeatherBaseResponse getWeatherForecast(@RequestParam @Size(min = 2, message = "Location must be provided") @ApiParam(name = "location", value = "Location", example = "london") String location,
+                                                  @RequestParam(defaultValue = "5") @Positive @ApiParam(name = "forecastDays", value = "Forecast Days", example = "5") Integer forecastDays,
+                                                  @RequestParam(defaultValue = "12") @TimeSteps(Values = {1, 12, 24}, message = "The Integer value is invalid, supported values are 1, 12 or 24.") @ApiParam(name = "timesteps", value = "Forecast time steps", example = "12") Integer timesteps
     ) {
         return mWeatherService.getWeatherForecast(location, forecastDays, timesteps);
     }
 
     @Operation(summary = "Get Historical Weather Records", description = "Provides access to hourly and daily historical weather records", tags = {"History"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation",
+            @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = WeatherBaseResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request")})
     @GetMapping(HISTORY)
-    public ResponseEntity<?> getHistoricalWeather(
+    public WeatherBaseResponse getHistoricalWeather(
             Period period,
             @Positive Integer timestepsMinutes,
             @RequestParam @Size(min = 2, message = "Location must be provided") String location,
@@ -79,7 +79,7 @@ public class WeatherController {
 
     @Operation(summary = "Get Historical Weather Reports", description = "Provides access to historical weather reports and processed information", tags = {"Reports"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "successful operation",
+            @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = WeatherBaseResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request")})
     @GetMapping(SUMMARY)
