@@ -1,6 +1,6 @@
 # Weather API
 
-This a Weather API application related
+This is a Weather API application related
 to [DefineX Java Spring Practicum](https://cohorts.patika.dev/cohortDetails/definex-java-spring-practicum/events) hosted
 in [Patika.dev](https://patika.dev/).
 
