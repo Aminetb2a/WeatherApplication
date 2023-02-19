@@ -11,6 +11,12 @@ import java.util.List;
 @Configuration
 public class RestTemplateConfig {
 
+    /**
+     * Create a new RestTemplate, add the logging interceptor to it.
+     *
+     * @param loggingInterceptor This is the interceptor that we created in the previous step.
+     * @return A RestTemplate object.
+     */
     @Bean
     public RestTemplate restTemplate(LoggingInterceptor loggingInterceptor) {
         RestTemplate restTemplate = new RestTemplate();

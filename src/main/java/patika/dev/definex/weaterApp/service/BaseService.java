@@ -21,11 +21,28 @@ public abstract class BaseService {
         this.mWeatherConfigurationProperties = mWeatherConfigurationProperties;
     }
 
+    /**
+     * This method makes a GET request to the given path with the given parameters and returns the
+     * response as a String.
+     *
+     * @param path   The path of the endpoint you want to hit.
+     * @param params The parameters to be sent to the server.
+     * @return A ResponseEntity object.
+     */
     public ResponseEntity<?> get(String path, MultiValueMap<String, String> params) {
         return exchange(HttpMethod.GET, path, params, new ParameterizedTypeReference<String>() {
         });
     }
 
+    /**
+     * Base method to send http request after setting url, path, parameters, and API key
+     *
+     * @param method     The HTTP method to use.
+     * @param path       The path of the API endpoint.
+     * @param params     The parameters to be sent to the API.
+     * @param returnType The type of the response body.
+     * @return ResponseEntity<?>
+     */
     public ResponseEntity<?> exchange(HttpMethod method, String path, MultiValueMap<String, String> params, ParameterizedTypeReference<?> returnType) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(mWeatherConfigurationProperties.getUrl()).path(path);
         params.add("key", mWeatherConfigurationProperties.getApiKey());

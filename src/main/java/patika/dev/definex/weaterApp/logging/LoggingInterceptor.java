@@ -19,6 +19,15 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
     private static final Logger log = LoggerFactory.getLogger(LoggingInterceptor.class.getName());
 
 
+    /**
+     * The intercept method is called before the request is sent to the server and after the
+     * response is received from the server to log the request to console.
+     *
+     * @param request   The request that is about to be sent to the server.
+     * @param body      The body of the request.
+     * @param execution The ClientHttpRequestExecution object is used to execute the request.
+     * @return A ClientHttpResponse object.
+     */
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
         logRequest(request, body);
@@ -27,6 +36,12 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
         return response;
     }
 
+    /**
+     * Method that logs the request URI, method, headers, and payload
+     *
+     * @param request The request object that is being sent to the server.
+     * @param body    The request body
+     */
     private void logRequest(HttpRequest request, byte[] body) throws IOException {
         log.info("====================================request begin====================================");
         log.info("URI       : {}", request.getURI());
@@ -38,6 +53,11 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
         log.info("====================================request end====================================");
     }
 
+    /**
+     * Method that logs the response status code, status text, headers and body
+     *
+     * @param response The response object returned by the server.
+     */
     private void logResponse(ClientHttpResponse response) throws IOException {
         log.info("====================================response begin====================================");
         log.info("Status Code       : {}", response.getStatusCode());
