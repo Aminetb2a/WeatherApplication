@@ -1,4 +1,4 @@
-package patika.dev.definex.weaterApp.model.dto;
+package patika.dev.definex.weaterApp.model.forecastDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

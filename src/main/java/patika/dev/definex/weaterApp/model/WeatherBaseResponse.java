@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import patika.dev.definex.weaterApp.model.dto.LocationDTO;
+import patika.dev.definex.weaterApp.model.forecastDTO.LocationDTO;
 
 @Data
 @NoArgsConstructor
